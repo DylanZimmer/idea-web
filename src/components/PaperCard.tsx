@@ -60,7 +60,7 @@ export function PaperCard({ item, style, className }: PaperCardProps) {
             Read paper
           </a>
         )}
-        <SavePaperButton paper={paper} />
+        <SavePaperButton paper={paper} categories={categories} />
       </div>
     </aside>
   )

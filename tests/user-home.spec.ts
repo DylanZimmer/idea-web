@@ -77,10 +77,34 @@ test.describe('signed in', () => {
       timeout: 15_000,
     })
 
-    // Remove it again so the test leaves no record behind.
-    await page.goBack()
+    // The search's categories show above the title, and notes start blank and save.
+    const row = page
+      .getByTestId('saved-papers-list')
+      .getByRole('listitem')
+      .filter({ has: page.getByRole('link', { name: title }) })
+    await expect(row.getByTestId('saved-paper-categories')).toHaveText('Testing')
+    const notes = row.getByTestId('saved-paper-notes')
+    await expect(notes).toHaveValue('')
+    await notes.fill('Read section 3 first')
+    await notes.blur()
+    await page.reload()
+    await expect(row.getByTestId('saved-paper-notes')).toHaveValue('Read section 3 first', { timeout: 15_000 })
+
+    // The remove button sits left of the title and the notes box right of it.
+    const [removeBox, titleBox, notesBox] = await Promise.all([
+      row.getByTestId('remove-saved-paper').boundingBox(),
+      row.getByRole('link', { name: title }).boundingBox(),
+      row.getByTestId('saved-paper-notes').boundingBox(),
+    ])
+    expect(removeBox!.x + removeBox!.width).toBeLessThanOrEqual(titleBox!.x)
+    expect(titleBox!.x + titleBox!.width).toBeLessThanOrEqual(notesBox!.x)
+    await page.screenshot({ path: '.deepspace/test-results/user-home-layout.png' })
+
+    // Removing it there also leaves the test with no record behind.
+    await row.getByTestId('remove-saved-paper').click()
+    await expect(page.getByRole('link', { name: title })).toHaveCount(0, { timeout: 15_000 })
+    await page.goto(`/results?${new URLSearchParams({ q: query })}`)
     await page.getByRole('link', { name: `${title}. Opens in the reader`, exact: true }).hover()
-    await page.getByTestId('save-paper-button').click()
     await expect(page.getByTestId('save-paper-button')).toHaveText('Save paper', { timeout: 15_000 })
   })
 })

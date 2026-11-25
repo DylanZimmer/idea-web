@@ -1,9 +1,15 @@
 import { useAuthUser, useMutations, useQuery } from 'deepspace'
-import type { SavedPaper } from '../schemas/saved-papers-schema'
+import { categoryColumns, type SavedPaper } from '../schemas/saved-papers-schema'
 import type { Paper } from '../type-defs'
 
+interface SavePaperButtonProps {
+  paper: Paper
+  /** The paper's categories in this search; stored with the save. */
+  categories: string[]
+}
+
 /** Saves the paper to the signed-in user's list, or removes it if already saved. */
-export function SavePaperButton({ paper }: { paper: Paper }) {
+export function SavePaperButton({ paper, categories }: SavePaperButtonProps) {
   const { isSignedIn } = useAuthUser()
   const { records } = useQuery<SavedPaper>('saved-papers', { where: { paperId: paper.id } })
   const { ready, create, remove } = useMutations<Omit<SavedPaper, 'userId'>>('saved-papers')
@@ -17,7 +23,7 @@ export function SavePaperButton({ paper }: { paper: Paper }) {
       return
     }
     const { id, ...rest } = paper
-    void create({ ...rest, paperId: id })
+    void create({ ...rest, paperId: id, ...categoryColumns(categories), notes: '' })
   }
 
   return (

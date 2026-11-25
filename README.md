@@ -31,8 +31,11 @@ Workers at `idea-web.app.space`.
 - **Highlight to search.** Select text in the reader and press **Go** to search
   for papers related to that passage.
 - **Saved papers.** Signed-in users can save papers and find them again at
-  `/user_home`. Each user sees only their own list, and it syncs live across
-  tabs and devices.
+  `/user_home`. A saved paper keeps the categories it had in that search
+  (shown above its title, stored in four columns, `category1`–`category4`)
+  and has a notes box beside it that starts blank and saves when you click
+  away. Each user sees only their own list, and it syncs live across tabs and
+  devices.
 - **Agent tools.** The same search, reader and saved-papers features are
   available to AI agents through DeepSpace's agent tools (see below).
 
