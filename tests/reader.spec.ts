@@ -42,7 +42,7 @@ test('the highlighting note sits to the right of the paper as plain text', async
   const { page } = user
   const source = `https://example.org/help-${Date.now()}`
   const note =
-    'You can highlight text inside the reader and search for related papers from the highlighted passage'
+    'Highlight text inside the reader and search for related papers from the highlighted passage'
 
   await page.setViewportSize({ width: 1400, height: 900 })
   await page.goto('/')

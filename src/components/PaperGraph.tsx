@@ -31,8 +31,8 @@ function bubbleName(paper: Paper): string {
   return name.length > 10 ? `${name.slice(0, 9)}…` : name
 }
 
-const openPaper = (url: string | null) => {
-  if (url) window.open(readerPath(url), '_blank', 'noopener')
+const openPaper = (url: string | null, title: string) => {
+  if (url) window.open(readerPath(url, title), '_blank', 'noopener')
 }
 
 function cardPosition(x: number, y: number): CSSProperties {
@@ -139,9 +139,9 @@ export function PaperGraph({ items, allItems }: PaperGraphProps) {
                 opacity={highlight && !highlight.paperIndexes.has(index) ? 0.3 : 1}
                 onMouseEnter={() => showGraphHover(paper.id)}
                 onFocus={() => showGraphHover(paper.id)}
-                onClick={() => openPaper(url)}
+                onClick={() => openPaper(url, paper.title)}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter') openPaper(url)
+                  if (event.key === 'Enter') openPaper(url, paper.title)
                 }}
               >
                 <circle

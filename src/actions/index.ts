@@ -13,11 +13,11 @@ export type SearchPapersData =
   | { status: 'limited'; retryAt: number }
 
 export type ReadPaperData =
-  | { status: 'ready'; markdown: string }
+  | { status: 'ready'; markdown: string; title: string | null }
   | { status: 'limited'; retryAt: number }
 
 interface ExaContents {
-  results?: { text?: string; extras?: { imageLinks?: unknown } }[]
+  results?: { title?: string | null; text?: string; extras?: { imageLinks?: unknown } }[]
 }
 
 const searchPapersParams = z.object({
@@ -113,7 +113,11 @@ export const actions: Record<string, ActionHandler<Env>> = {
         console.error('[readPaper] no text returned')
         return failed()
       }
-      const data: ReadPaperData = { status: 'ready', markdown: addFigures(text, page?.extras?.imageLinks) }
+      const data: ReadPaperData = {
+        status: 'ready',
+        markdown: addFigures(text, page?.extras?.imageLinks),
+        title: page?.title?.trim() || null,
+      }
       return { success: true, data }
     } catch (error) {
       console.error('[readPaper] failed', error instanceof Error ? error.message : error)

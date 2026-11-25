@@ -133,7 +133,7 @@ export function CategoryList({ items, active, highlighted, onActiveChange }: Cat
                     <li key={paper.id}>
                       {url ? (
                         <a
-                          href={readerPath(url)}
+                          href={readerPath(url, paper.title)}
                           target="_blank"
                           rel="noopener"
                           aria-label={`${authorLabel(paper)}: ${paper.title}. Opens in the reader`}

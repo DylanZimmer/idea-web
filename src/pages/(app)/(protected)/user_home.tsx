@@ -93,7 +93,7 @@ export default function UserHome() {
                     </button>
                     {url ? (
                       <a
-                        href={readerPath(url)}
+                        href={readerPath(url, record.data.title)}
                         target="_blank"
                         rel="noopener"
                         className="font-medium text-primary underline-offset-4 hover:underline"

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui'
 
 export const HIGHLIGHT_HELP_TEXT =
-  'You can highlight text inside the reader and search for related papers from the highlighted passage'
+  'Highlight text inside the reader and search for related papers from the highlighted passage'
 
 interface HighlightHelpProps {
   side?: 'top' | 'bottom' | 'left' | 'right'

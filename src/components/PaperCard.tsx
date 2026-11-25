@@ -52,7 +52,7 @@ export function PaperCard({ item, style, className }: PaperCardProps) {
       <div className="mt-3 flex items-center gap-4">
         {url && (
           <a
-            href={readerPath(url)}
+            href={readerPath(url, paper.title)}
             target="_blank"
             rel="noopener"
             className="text-xs font-medium text-primary underline"

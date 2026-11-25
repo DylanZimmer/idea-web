@@ -154,6 +154,7 @@ function appTools(context: AgentToolContext<Env>): ToolSet {
         const truncated = data.markdown.length > TOOL_PAPER_CHARS
         return {
           status: 'ready',
+          title: data.title,
           markdown: truncated ? data.markdown.slice(0, TOOL_PAPER_CHARS) : data.markdown,
           truncated,
           totalChars: data.markdown.length,

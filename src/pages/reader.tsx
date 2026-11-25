@@ -5,7 +5,7 @@
  * DeepSpace's auth itself because loading a paper is a paid, signed-in action.
  */
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { AuthGate, DeepSpaceAuthProvider } from 'deepspace'
 import Navigation from '../components/Navigation'
@@ -29,14 +29,16 @@ function Screen({ children, role }: { children: ReactNode; role: 'status' | 'ale
   )
 }
 
-function PaperLoader({ url }: { url: string }) {
+function PaperLoader({ url, onTitle }: { url: string; onTitle: (title: string | null) => void }) {
   const [state, setState] = useState<ReaderState>({ status: 'loading' })
 
   useEffect(() => {
     let cancelled = false
     readPaper(url)
-      .then((markdown) => {
-        if (!cancelled) setState({ status: 'ready', markdown })
+      .then(({ markdown, title }) => {
+        if (cancelled) return
+        onTitle(title)
+        setState({ status: 'ready', markdown })
       })
       .catch((error: unknown) => {
         if (cancelled) return
@@ -50,7 +52,7 @@ function PaperLoader({ url }: { url: string }) {
     return () => {
       cancelled = true
     }
-  }, [url])
+  }, [url, onTitle])
 
   if (state.status === 'ready') return <PaperSheet markdown={state.markdown} sourceUrl={url} />
   if (state.status === 'loading') {
@@ -93,9 +95,7 @@ function PaperLoader({ url }: { url: string }) {
   )
 }
 
-function ReaderScreen() {
-  const [searchParams] = useSearchParams()
-  const url = normalizeReaderUrl(searchParams.get('url') ?? '')
+function ReaderScreen({ url, onTitle }: { url: string | null; onTitle: (title: string | null) => void }) {
 
   if (!url) {
     return (
@@ -104,21 +104,28 @@ function ReaderScreen() {
       </Screen>
     )
   }
-  return <PaperLoader key={url} url={url} />
+  return <PaperLoader key={url} url={url} onTitle={onTitle} />
 }
 
 export default function Reader() {
   const [searchParams] = useSearchParams()
   const sourceUrl = normalizeReaderUrl(searchParams.get('url') ?? '')
+  // The tab shows the paper's name: the title the link carried, else the one
+  // found on the page, else the site it came from.
+  const linkTitle = searchParams.get('title')?.trim().slice(0, 300) || null
+  const [pageTitle, setPageTitle] = useState<{ url: string; title: string | null } | null>(null)
+  const onTitle = useCallback((title: string | null) => setPageTitle({ url: sourceUrl ?? '', title }), [sourceUrl])
+  const loadedTitle = pageTitle?.url === sourceUrl ? pageTitle.title : null
+  const tabTitle = linkTitle ?? loadedTitle ?? (sourceUrl ? new URL(sourceUrl).hostname : null) ?? 'Reader'
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-black">
-      <title>Reader</title>
+      <title>{tabTitle}</title>
       <DeepSpaceAuthProvider>
         <Navigation sourceUrl={sourceUrl} />
         <main className="min-h-0 flex-1 overflow-y-auto">
           <AuthGate>
-            <ReaderScreen />
+            <ReaderScreen url={sourceUrl} onTitle={onTitle} />
           </AuthGate>
         </main>
       </DeepSpaceAuthProvider>

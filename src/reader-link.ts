@@ -22,4 +22,10 @@ export function normalizeReaderUrl(input: string): string | null {
   return url.toString()
 }
 
-export const readerPath = (url: string) => `/reader?${new URLSearchParams({ url })}`
+/** The title, when known, becomes the reader's tab name before the paper loads. */
+export function readerPath(url: string, title?: string | null): string {
+  const params = new URLSearchParams({ url })
+  const name = title?.trim()
+  if (name) params.set('title', name.slice(0, 300))
+  return `/reader?${params}`
+}

@@ -31,4 +31,11 @@ describe('readerPath', () => {
       '/reader?url=https%3A%2F%2Fexample.com%2Fa%3Fb%3D1%26c%3D2',
     )
   })
+
+  it('adds the paper title when given, and leaves out a blank one', () => {
+    expect(readerPath('https://example.com/p', 'Graphs & Things')).toBe(
+      '/reader?url=https%3A%2F%2Fexample.com%2Fp&title=Graphs+%26+Things',
+    )
+    expect(readerPath('https://example.com/p', '  ')).toBe('/reader?url=https%3A%2F%2Fexample.com%2Fp')
+  })
 })
